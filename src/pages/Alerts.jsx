@@ -1,142 +1,150 @@
 import React from 'react';
-import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Info, Clock } from 'lucide-react';
 
 export default function Alerts() {
+  const alertTypes = [
+    {
+      id: 'gpip',
+      name: 'GPIP Alert',
+      subtitle: 'Glucose-Perfusion Inflection Point',
+      severity: 'critical',
+      trigger: 'Glucose trend shifts from rising to falling while HRV suppressed or HR elevated',
+      significance: 'Potential transition from compensated to decompensating shock (10–30 min early warning)',
+      action: 'Aggressive fluid resuscitation, hemorrhage control check, prepare blood products',
+      icon: AlertTriangle,
+    },
+    {
+      id: 'cri',
+      name: 'CRI Alert',
+      subtitle: 'Compensatory Reserve Index Low',
+      severity: 'warning',
+      trigger: 'Compensatory Reserve Index drops below 40 (critical threshold)',
+      significance: "Body's compensatory mechanisms (tachycardia, vasoconstriction) near exhaustion",
+      action: 'Immediate fluid resuscitation, expedite MEDEVAC, prepare for hemodynamic instability',
+      icon: AlertTriangle,
+    },
+    {
+      id: 'amc',
+      name: 'AMC Alert',
+      subtitle: 'Autonomic-Metabolic Decoupling',
+      severity: 'warning',
+      trigger: 'Autonomic and metabolic systems not responding together as expected',
+      significance: 'Signals hidden pathology—perfusion failure, hepatic hypoperfusion, occult hemorrhage',
+      action: 'Investigate source of decoupling; reassess hemorrhage control and perfusion status',
+      icon: AlertCircle,
+    },
+    {
+      id: 'sepsis',
+      name: 'Sepsis Alert',
+      subtitle: 'Trajectory Predictor',
+      severity: 'critical',
+      trigger: 'At 12+ hours post-injury, 3+ parameters show worsening trajectory',
+      significance: 'Detects deviation from normal post-trauma recovery toward sepsis development',
+      action: 'Empiric broad-spectrum antibiotics, abdominal reassessment, increased fluid resuscitation',
+      icon: AlertTriangle,
+    },
+    {
+      id: 'ori',
+      name: 'ORI Alert',
+      subtitle: 'Low Operator Readiness Index',
+      severity: 'info',
+      trigger: 'Operator Readiness Index drops below 60',
+      significance: 'Operator may not be optimally prepared for mission or training',
+      action: 'Additional rest, medical evaluation if persistent, potential mission delay',
+      icon: Info,
+    },
+  ];
+
+  const getSeverityColor = (severity) => {
+    switch (severity) {
+      case 'critical':
+        return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', badge: 'bg-red-100 text-red-700' };
+      case 'warning':
+        return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700' };
+      case 'info':
+        return { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700' };
+      default:
+        return { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-700', badge: 'bg-slate-100 text-slate-700' };
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Placeholder Notice */}
-      <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-6 py-4 rounded-lg flex gap-3">
-        <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+      <div className={`card border rounded-xl p-4 flex gap-3 bg-yellow-50 border-yellow-200`}>
+        <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="font-semibold">Placeholder: Algorithm Alerts Pending</p>
-          <p className="text-sm">
-            Alert generation requires GPIP, CRI, AMC, IDS, and other algorithms to be implemented and receiving real wearable data (VivaLink ECG + Dexcom CGM). 
-            Once integrated, real-time alerts will appear here.
+          <p className="font-semibold text-yellow-900">Placeholder: Algorithm Alerts Pending</p>
+          <p className="text-sm text-yellow-800 mt-1">
+            Once VivaLink ECG + algorithms are implemented, real-time alerts will appear here.
           </p>
         </div>
       </div>
 
-      {/* Expected Alert Types */}
+      {/* Alert Types */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Expected Alert Types</h3>
+        <h3 className="text-lg font-bold text-slate-900">Expected Alert Types</h3>
 
-        {/* GPIP Alert */}
-        <div className="bg-white border-l-4 border-red-500 rounded-lg p-4 shadow">
-          <div className="flex gap-3">
-            <AlertTriangle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900">GPIP Alert (Glucose-Perfusion Inflection)</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Trigger:</strong> Glucose trend shifts from rising to falling while HRV remains suppressed or heart rate elevated.
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Significance:</strong> Potential transition from compensated to decompensating shock (10–30 min before vital sign collapse).
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Recommended Action:</strong> Aggressive fluid resuscitation, hemorrhage control check, prepare blood products.
-              </p>
-            </div>
-          </div>
-        </div>
+        {alertTypes.map((alert) => {
+          const Icon = alert.icon;
+          const colors = getSeverityColor(alert.severity);
+          return (
+            <div key={alert.id} className={`card border-l-4 rounded-xl overflow-hidden hover:shadow-md transition-all ${colors.bg} ${colors.border}`}>
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 bg-white rounded-lg mt-1`}>
+                      <Icon size={20} className={colors.text} />
+                    </div>
+                    <div>
+                      <h4 className={`font-bold ${colors.text}`}>{alert.name}</h4>
+                      <p className={`text-sm ${colors.text} opacity-80`}>{alert.subtitle}</p>
+                    </div>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${colors.badge}`}>
+                    {alert.severity.toUpperCase()}
+                  </span>
+                </div>
 
-        {/* CRI Alert */}
-        <div className="bg-white border-l-4 border-orange-500 rounded-lg p-4 shadow">
-          <div className="flex gap-3">
-            <AlertTriangle size={20} className="text-orange-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900">CRI Alert (Compensatory Reserve Low)</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Trigger:</strong> Compensatory Reserve Index drops below 40 (critical threshold from Convertino et al. 2023).
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Significance:</strong> Body's compensatory mechanisms (tachycardia, vasoconstriction, catecholamine release) are near exhaustion.
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Recommended Action:</strong> Immediate fluid resuscitation, expedite MEDEVAC, prepare for hemodynamic instability.
-              </p>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-semibold text-slate-900">Trigger</p>
+                    <p className="text-slate-700 mt-1">{alert.trigger}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Significance</p>
+                    <p className="text-slate-700 mt-1">{alert.significance}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Recommended Action</p>
+                    <p className="text-slate-700 mt-1">{alert.action}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* AMC Alert */}
-        <div className="bg-white border-l-4 border-yellow-500 rounded-lg p-4 shadow">
-          <div className="flex gap-3">
-            <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900">AMC Alert (Autonomic-Metabolic Decoupling)</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Trigger:</strong> Autonomic and metabolic systems are not responding as expected together (e.g., sympathetic activation without glucose rise).
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Significance:</strong> Signals hidden pathology—perfusion failure, hepatic hypoperfusion, or occult hemorrhage.
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Recommended Action:</strong> Investigate source of decoupling; reassess hemorrhage control and perfusion status.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Sepsis Alert */}
-        <div className="bg-white border-l-4 border-purple-500 rounded-lg p-4 shadow">
-          <div className="flex gap-3">
-            <AlertTriangle size={20} className="text-purple-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900">Sepsis Alert (Trajectory Predictor)</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Trigger:</strong> At 12+ hours post-injury, 3+ parameters show worsening trajectory (HRV not improving, HR persistent, glucose rising, temperature drifting).
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Significance:</strong> Detects deviation from normal post-trauma recovery toward sepsis development.
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Recommended Action:</strong> Empiric broad-spectrum antibiotics, abdominal reassessment, increased fluid resuscitation.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ORI Alert */}
-        <div className="bg-white border-l-4 border-blue-500 rounded-lg p-4 shadow">
-          <div className="flex gap-3">
-            <Info size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900">ORI Alert (Low Readiness Index)</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Trigger:</strong> Operator Readiness Index drops below 60 (inadequate recovery, high fatigue, or illness).
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Significance:</strong> Operator may not be optimally prepared for mission or training.
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                <strong>Recommended Action:</strong> Additional rest, medical evaluation if persistent, potential mission delay.
-              </p>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
 
-      {/* Implementation Status */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-3">Implementation Timeline</h3>
-        <ul className="space-y-2 text-sm text-gray-700">
-          <li>
-            <span className="inline-block w-24 font-semibold">Week 1:</span>
-            Core GPIP, CRI, AMC algorithms implemented with test data
-          </li>
-          <li>
-            <span className="inline-block w-24 font-semibold">Week 2:</span>
-            IDS aggregation + dashboard alert rendering
-          </li>
-          <li>
-            <span className="inline-block w-24 font-semibold">Week 3:</span>
-            VivaLink ECG integration + live algorithm evaluation
-          </li>
-          <li>
-            <span className="inline-block w-24 font-semibold">Week 4:</span>
-            ORI + garrison readiness features
-          </li>
-        </ul>
+      {/* Implementation Timeline */}
+      <div className="card p-6 md:p-8">
+        <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <Clock size={20} />
+          Implementation Timeline
+        </h3>
+        <div className="space-y-3">
+          {[
+            { week: 'Week 1', task: 'Core GPIP, CRI, AMC algorithms with test data' },
+            { week: 'Week 2', task: 'IDS aggregation + dashboard alert rendering' },
+            { week: 'Week 3', task: 'VivaLink ECG integration + live algorithm evaluation' },
+            { week: 'Week 4', task: 'ORI + garrison readiness features' },
+          ].map((item) => (
+            <div key={item.week} className="flex gap-4 p-3 bg-slate-50 rounded-lg">
+              <span className="font-semibold text-blue-600 min-w-fit">{item.week}</span>
+              <span className="text-slate-700">{item.task}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

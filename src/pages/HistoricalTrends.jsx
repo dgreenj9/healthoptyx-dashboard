@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import { Calendar, TrendingUp } from 'lucide-react';
 import { getGlucose } from '../api';
 
 export default function HistoricalTrends({ subjectId }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [period, setPeriod] = useState('7d'); // 7d, 30d, 90d
+  const [period, setPeriod] = useState('7d');
 
   const fetchData = async () => {
     try {
@@ -30,7 +31,6 @@ export default function HistoricalTrends({ subjectId }) {
 
       const response = await getGlucose(subjectId, start, now);
       
-      // Aggregate data by day for longer periods
       const aggregatedData = {};
       response.data.forEach((point) => {
         const date = new Date(point.timestamp);
@@ -55,7 +55,6 @@ export default function HistoricalTrends({ subjectId }) {
       setError(null);
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching historical data:', err);
     } finally {
       setLoading(false);
     }
@@ -73,7 +72,7 @@ export default function HistoricalTrends({ subjectId }) {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+      <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
         <p className="font-semibold">Error Loading Data</p>
         <p className="text-sm">{error}</p>
       </div>
@@ -83,77 +82,100 @@ export default function HistoricalTrends({ subjectId }) {
   return (
     <div className="space-y-6">
       {/* Period Selector */}
-      <div className="flex gap-2">
-        {['7d', '30d', '90d'].map((p) => (
+      <div className="flex gap-3">
+        {[
+          { value: '7d', label: '7 Days' },
+          { value: '30d', label: '30 Days' },
+          { value: '90d', label: '90 Days' },
+        ].map((p) => (
           <button
-            key={p}
-            onClick={() => setPeriod(p)}
-            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-              period === p
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+            key={p.value}
+            onClick={() => setPeriod(p.value)}
+            className={`px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${
+              period === p.value
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:shadow-sm'
             }`}
           >
-            {p === '7d' ? '7 Days' : p === '30d' ? '30 Days' : '90 Days'}
+            {p.label}
           </button>
         ))}
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-          <p className="text-gray-600 text-sm font-semibold">Average Daily Low</p>
-          <p className="text-green-600 text-3xl font-bold mt-2">{stats.avgMin}</p>
-          <p className="text-gray-500 text-xs mt-1">mg/dL</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="card p-6 border-l-4 border-l-green-500 hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-slate-600 text-sm font-medium">Avg Daily Low</p>
+            <TrendingUp size={18} className="text-green-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-900">{stats.avgMin}</p>
+          <p className="text-xs text-slate-500 mt-1">mg/dL</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-          <p className="text-gray-600 text-sm font-semibold">Average Daily Mean</p>
-          <p className="text-blue-600 text-3xl font-bold mt-2">{stats.avgAvg}</p>
-          <p className="text-gray-500 text-xs mt-1">mg/dL</p>
+        <div className="card p-6 border-l-4 border-l-blue-500 hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-slate-600 text-sm font-medium">Avg Daily Mean</p>
+            <Calendar size={18} className="text-blue-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-900">{stats.avgAvg}</p>
+          <p className="text-xs text-slate-500 mt-1">mg/dL</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
-          <p className="text-gray-600 text-sm font-semibold">Average Daily High</p>
-          <p className="text-orange-600 text-3xl font-bold mt-2">{stats.avgMax}</p>
-          <p className="text-gray-500 text-xs mt-1">mg/dL</p>
+        <div className="card p-6 border-l-4 border-l-amber-500 hover:shadow-md">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-slate-600 text-sm font-medium">Avg Daily High</p>
+            <TrendingUp size={18} className="text-amber-600" />
+          </div>
+          <p className="text-3xl font-bold text-slate-900">{stats.avgMax}</p>
+          <p className="text-xs text-slate-500 mt-1">mg/dL</p>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Range & Average</h3>
+      <div className="card p-6 md:p-8">
+        <h3 className="text-lg font-bold text-slate-900 mb-6">Daily Range & Average</h3>
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading trend data...</div>
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-spin">
+              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
+            </div>
+          </div>
         ) : data.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">No data available for this period</div>
+          <div className="text-center py-12 text-slate-500">No data available for this period</div>
         ) : (
           <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <LineChart data={data} margin={{ top: 10, right: 30, left: -10, bottom: 10 }}>
+              <defs>
+                <linearGradient id="avgGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#0066cc" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="#0066cc" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
                 interval={Math.floor(data.length / 6)}
               />
               <YAxis
                 domain={[60, 200]}
-                label={{ value: 'mg/dL', angle: -90, position: 'insideLeft' }}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: '#64748b' }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '6px',
-                  padding: '8px',
+                  backgroundColor: '#1e293b',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#fff',
                 }}
+                cursor={{ strokeDasharray: '3 3', stroke: '#64748b' }}
                 formatter={(value) => `${value} mg/dL`}
               />
               <Legend />
-              <ReferenceLine y={100} stroke="#10b981" strokeDasharray="3 3" label={{ value: 'Target (100)', position: 'right', fontSize: 11, fill: '#10b981' }} />
-              <ReferenceLine y={180} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'High (180)', position: 'right', fontSize: 11, fill: '#f97316' }} />
-              <Line type="monotone" dataKey="max" stroke="#f97316" dot={false} strokeWidth={1.5} name="Daily High" isAnimationActive={false} />
-              <Line type="monotone" dataKey="avg" stroke="#3b82f6" dot={false} strokeWidth={2.5} name="Daily Average" isAnimationActive={false} />
-              <Line type="monotone" dataKey="min" stroke="#10b981" dot={false} strokeWidth={1.5} name="Daily Low" isAnimationActive={false} />
+              <ReferenceLine y={100} stroke="#10b981" strokeDasharray="3 3" opacity={0.5} />
+              <ReferenceLine y={180} stroke="#f59e0b" strokeDasharray="3 3" opacity={0.5} />
+              <Line type="monotone" dataKey="max" stroke="#f59e0b" dot={false} strokeWidth={2} name="Daily High" isAnimationActive={false} />
+              <Line type="monotone" dataKey="avg" stroke="#0066cc" dot={false} strokeWidth={3} name="Daily Average" isAnimationActive={false} fill="url(#avgGradient)" />
+              <Line type="monotone" dataKey="min" stroke="#10b981" dot={false} strokeWidth={2} name="Daily Low" isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         )}
