@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
-import { Calendar, TrendingUp } from 'lucide-react';
+import { Calendar, TrendingUp, BarChart3 } from 'lucide-react';
 import { getGlucose } from '../api';
 
 export default function HistoricalTrends({ subjectId }) {
@@ -80,7 +80,7 @@ export default function HistoricalTrends({ subjectId }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Period Selector */}
       <div className="flex gap-3">
         {[
@@ -91,10 +91,10 @@ export default function HistoricalTrends({ subjectId }) {
           <button
             key={p.value}
             onClick={() => setPeriod(p.value)}
-            className={`px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-5 py-2.5 rounded-lg font-semibold text-sm transition-all ${
               period === p.value
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                ? 'bg-indigo-600 text-white shadow-lg'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
             }`}
           >
             {p.label}
@@ -102,41 +102,50 @@ export default function HistoricalTrends({ subjectId }) {
         ))}
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="card p-6 border-l-4 border-l-green-500 hover:shadow-md">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-slate-600 text-sm font-medium">Avg Daily Low</p>
-            <TrendingUp size={18} className="text-green-600" />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="stat-card border-l-4 border-l-green-500">
+          <div className="flex items-center justify-between mb-3">
+            <span className="stat-label">Avg Daily Low</span>
+            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+              <TrendingUp size={18} className="text-green-600" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-slate-900">{stats.avgMin}</p>
-          <p className="text-xs text-slate-500 mt-1">mg/dL</p>
+          <p className="stat-value text-green-600">{stats.avgMin}</p>
+          <p className="text-muted">mg/dL</p>
         </div>
-        <div className="card p-6 border-l-4 border-l-blue-500 hover:shadow-md">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-slate-600 text-sm font-medium">Avg Daily Mean</p>
-            <Calendar size={18} className="text-blue-600" />
+        <div className="stat-card border-l-4 border-l-indigo-500">
+          <div className="flex items-center justify-between mb-3">
+            <span className="stat-label">Avg Daily Mean</span>
+            <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <BarChart3 size={18} className="text-indigo-600" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-slate-900">{stats.avgAvg}</p>
-          <p className="text-xs text-slate-500 mt-1">mg/dL</p>
+          <p className="stat-value text-indigo-600">{stats.avgAvg}</p>
+          <p className="text-muted">mg/dL</p>
         </div>
-        <div className="card p-6 border-l-4 border-l-amber-500 hover:shadow-md">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-slate-600 text-sm font-medium">Avg Daily High</p>
-            <TrendingUp size={18} className="text-amber-600" />
+        <div className="stat-card border-l-4 border-l-amber-500">
+          <div className="flex items-center justify-between mb-3">
+            <span className="stat-label">Avg Daily High</span>
+            <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
+              <TrendingUp size={18} className="text-amber-600" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-slate-900">{stats.avgMax}</p>
-          <p className="text-xs text-slate-500 mt-1">mg/dL</p>
+          <p className="stat-value text-amber-600">{stats.avgMax}</p>
+          <p className="text-muted">mg/dL</p>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="card p-6 md:p-8">
-        <h3 className="text-lg font-bold text-slate-900 mb-6">Daily Range & Average</h3>
+      <div className="card p-8 md:p-12">
+        <h3 className="text-xl font-bold text-slate-900 mb-2">Daily Range & Average</h3>
+        <p className="text-slate-500 text-sm mb-8">Showing {period === '7d' ? 'last 7 days' : period === '30d' ? 'last 30 days' : 'last 90 days'}</p>
+        
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="animate-spin">
-              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-slate-500">Loading trend data...</p>
             </div>
           </div>
         ) : data.length === 0 ? (
@@ -146,35 +155,37 @@ export default function HistoricalTrends({ subjectId }) {
             <LineChart data={data} margin={{ top: 10, right: 30, left: -10, bottom: 10 }}>
               <defs>
                 <linearGradient id="avgGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0066cc" stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor="#0066cc" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15}/>
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: '#94a3b8' }}
                 interval={Math.floor(data.length / 6)}
+                stroke="#e5e7eb"
               />
               <YAxis
                 domain={[60, 200]}
-                tick={{ fontSize: 12, fill: '#64748b' }}
+                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                stroke="#e5e7eb"
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1e293b',
+                  backgroundColor: '#0f172a',
                   border: 'none',
                   borderRadius: '8px',
                   color: '#fff',
                 }}
-                cursor={{ strokeDasharray: '3 3', stroke: '#64748b' }}
+                cursor={{ strokeDasharray: '3 3', stroke: '#94a3b8' }}
                 formatter={(value) => `${value} mg/dL`}
               />
-              <Legend />
-              <ReferenceLine y={100} stroke="#10b981" strokeDasharray="3 3" opacity={0.5} />
-              <ReferenceLine y={180} stroke="#f59e0b" strokeDasharray="3 3" opacity={0.5} />
+              <Legend wrapperStyle={{ paddingTop: '20px' }} />
+              <ReferenceLine y={100} stroke="#10b981" strokeDasharray="3 3" opacity={0.3} />
+              <ReferenceLine y={180} stroke="#f59e0b" strokeDasharray="3 3" opacity={0.3} />
               <Line type="monotone" dataKey="max" stroke="#f59e0b" dot={false} strokeWidth={2} name="Daily High" isAnimationActive={false} />
-              <Line type="monotone" dataKey="avg" stroke="#0066cc" dot={false} strokeWidth={3} name="Daily Average" isAnimationActive={false} fill="url(#avgGradient)" />
+              <Line type="monotone" dataKey="avg" stroke="#6366f1" dot={false} strokeWidth={3} name="Daily Average" isAnimationActive={false} fill="url(#avgGradient)" />
               <Line type="monotone" dataKey="min" stroke="#10b981" dot={false} strokeWidth={2} name="Daily Low" isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>

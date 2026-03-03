@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Info, Server } from 'lucide-react';
+import { Save, Info, Server, Sliders } from 'lucide-react';
 
 export default function Settings() {
   const [formData, setFormData] = useState({
@@ -26,27 +26,27 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-8 max-w-2xl">
       {/* Save Notification */}
       {saved && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-3 rounded-xl flex items-center gap-3 animate-slide-in">
-          <span className="text-lg">✓</span>
-          <span className="font-medium">Settings saved successfully</span>
+        <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-xl flex items-center gap-3 animate-slide-in">
+          <span className="text-xl">✓</span>
+          <span className="font-semibold">Settings saved successfully</span>
         </div>
       )}
 
       {/* Data Source Settings */}
-      <div className="card p-6 md:p-8">
+      <div className="card p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-blue-100 rounded-lg">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
             <Server size={20} className="text-blue-600" />
           </div>
           <h3 className="text-lg font-bold text-slate-900">Data & Connectivity</h3>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
+            <label className="block text-sm font-bold text-slate-900 mb-2 uppercase tracking-wider">
               Subject ID
             </label>
             <input
@@ -54,20 +54,20 @@ export default function Settings() {
               name="subjectId"
               value={formData.subjectId}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full"
             />
             <p className="text-xs text-slate-500 mt-2">Internal identifier for this patient</p>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
+            <label className="block text-sm font-bold text-slate-900 mb-2 uppercase tracking-wider">
               API Refresh Interval
             </label>
             <select
               name="refreshInterval"
               value={formData.refreshInterval}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full"
             >
               <option value={1}>Every 1 minute</option>
               <option value={5}>Every 5 minutes</option>
@@ -81,12 +81,17 @@ export default function Settings() {
       </div>
 
       {/* Glucose Thresholds */}
-      <div className="card p-6 md:p-8">
-        <h3 className="text-lg font-bold text-slate-900 mb-6">Glucose Thresholds</h3>
+      <div className="card p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
+            <Sliders size={20} className="text-purple-600" />
+          </div>
+          <h3 className="text-lg font-bold text-slate-900">Glucose Thresholds</h3>
+        </div>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
+            <label className="block text-sm font-bold text-slate-900 mb-2 uppercase tracking-wider">
               Low Glucose Threshold
             </label>
             <div className="flex items-center gap-3">
@@ -95,15 +100,15 @@ export default function Settings() {
                 name="glucoseLowThreshold"
                 value={formData.glucoseLowThreshold}
                 onChange={handleChange}
-                className="w-32 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-32"
               />
-              <span className="text-sm font-medium text-slate-600">mg/dL</span>
+              <span className="font-semibold text-slate-600">mg/dL</span>
             </div>
             <p className="text-xs text-slate-500 mt-2">Readings below this value are marked as "Low"</p>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
+            <label className="block text-sm font-bold text-slate-900 mb-2 uppercase tracking-wider">
               High Glucose Threshold
             </label>
             <div className="flex items-center gap-3">
@@ -112,25 +117,25 @@ export default function Settings() {
                 name="glucoseHighThreshold"
                 value={formData.glucoseHighThreshold}
                 onChange={handleChange}
-                className="w-32 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-32"
               />
-              <span className="text-sm font-medium text-slate-600">mg/dL</span>
+              <span className="font-semibold text-slate-600">mg/dL</span>
             </div>
             <p className="text-xs text-slate-500 mt-2">Readings above this value are marked as "High"</p>
           </div>
         </div>
       </div>
 
-      {/* Data Source Info */}
-      <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 flex gap-3">
-        <Info size={20} className="text-slate-600 flex-shrink-0 mt-0.5" />
+      {/* Configuration Info */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 flex gap-4">
+        <Info size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-semibold text-slate-900 mb-2">Current Configuration</h4>
-          <div className="space-y-1 text-sm text-slate-700">
-            <p><span className="font-medium">API Endpoint:</span> http://127.0.0.1:8000</p>
-            <p><span className="font-medium">Subject:</span> {formData.subjectId}</p>
-            <p><span className="font-medium">Data Source:</span> Dexcom Sandbox</p>
-            <p className="text-xs text-slate-600 mt-2">
+          <h4 className="font-bold text-blue-900">Current Configuration</h4>
+          <div className="space-y-1 text-sm text-blue-900 mt-3">
+            <p><span className="font-semibold">API Endpoint:</span> http://127.0.0.1:8000</p>
+            <p><span className="font-semibold">Subject:</span> {formData.subjectId}</p>
+            <p><span className="font-semibold">Data Source:</span> Dexcom Sandbox</p>
+            <p className="text-xs text-blue-800 mt-2">
               When you deploy the FastAPI backend to production, update the API endpoint in environment variables.
             </p>
           </div>
@@ -138,15 +143,13 @@ export default function Settings() {
       </div>
 
       {/* Save Button */}
-      <div className="flex gap-3">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 active:scale-95 transition-all shadow-sm"
-        >
-          <Save size={18} />
-          Save Settings
-        </button>
-      </div>
+      <button
+        onClick={handleSave}
+        className="btn btn-primary text-base"
+      >
+        <Save size={20} />
+        Save Settings
+      </button>
     </div>
   );
 }
